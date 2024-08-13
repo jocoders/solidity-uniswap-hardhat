@@ -87,7 +87,7 @@ describe('Uniswap', function () {
         const swapEthToTokenData = encodeFunctionData({
           abi: contract.abi,
           functionName: 'swapEthToToken',
-          args: [tokenName, swapEthAmount]
+          args: [tokenName]
         })
 
         const txHash = await otherAcc.sendTransaction({
@@ -95,8 +95,6 @@ describe('Uniswap', function () {
           value: swapEthAmount,
           data: swapEthToTokenData
         })
-
-        // await contract.write.swapEthToToken([tokenName, swapEthAmount], { account: otherAcc.account })
 
         const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash })
 
@@ -128,7 +126,7 @@ describe('Uniswap', function () {
         expect(finalContractGalTokenBalance).to.be.eq(contractGalTokenBalance + galToSwapBack)
       })
       it('Should swap one token for another', async function () {
-        const { contract, otherAcc } = await loadFixture(deployFixture)
+        const { contract, otherAcc, publicClient } = await loadFixture(deployFixture)
         const swapEthAmount = parseEther('1')
         const galTokenName = 'GAL'
         const jocTokenName = 'JOC'
@@ -144,14 +142,16 @@ describe('Uniswap', function () {
         const swapEthToTokenData = encodeFunctionData({
           abi: contract.abi,
           functionName: 'swapEthToToken',
-          args: [galTokenName, swapEthAmount]
+          args: [galTokenName]
         })
 
-        await otherAcc.sendTransaction({
+        const txHash = await otherAcc.sendTransaction({
           to: contract.address,
           value: swapEthAmount,
           data: swapEthToTokenData
         })
+
+        await publicClient.waitForTransactionReceipt({ hash: txHash })
 
         const otherAccGalBalance = await galTokenContract.read.balanceOf([otherAcc.account.address])
         const otherAccJocInitBalance = await jocTokenContract.read.balanceOf([otherAcc.account.address])

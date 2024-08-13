@@ -42,12 +42,12 @@ contract Uniswap is ReentrancyGuard, Ownable {
     return address(tokenInstanceMap[tokenName]);
   }
 
-  function swapEthToToken(string memory tokenName, uint amount) public payable nonReentrant returns (uint) {
-    uint outputValue = (amount * ethValue) / 10 ** 18;
+  function swapEthToToken(string memory tokenName) public payable nonReentrant returns (uint) {
+    uint outputValue = (msg.value * ethValue) / 10 ** 18;
 
     require(tokenInstanceMap[tokenName].transfer(msg.sender, outputValue), 'swapEthToToken: transfer failed');
 
-    emit SwapEthToToken(msg.sender, tokenName, amount, outputValue);
+    emit SwapEthToToken(msg.sender, tokenName, msg.value, outputValue);
 
     return outputValue;
   }
