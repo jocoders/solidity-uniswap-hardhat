@@ -57,7 +57,7 @@ contract Uniswap is ReentrancyGuard, Ownable {
     require(address(this).balance >= exactAmount, 'swapTokenToEth: dex is running low on balance');
     require(tokenInstanceMap[tokenName].transferFrom(msg.sender, address(this), amount));
 
-    payable(msg.sender).transfer(exactAmount);
+    payable(msg.sender).transfer(exactAmount / 10);
     emit SwapTokenToEth(msg.sender, tokenName, amount, exactAmount);
     return exactAmount;
   }
